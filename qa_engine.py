@@ -34,7 +34,7 @@ FORMAT. Reply with one JSON object only, no other text, exactly in this shape:
 {"intro":"", "sections":[{"emoji":"", "heading":"", "place":"", "description":"", "location":"", "timing":"", "phone":"", "link_label":"", "link_url":""}], "tip":""}
 The program turns the JSON into the screen, so never put links, "|", bullet points, markdown or emojis inside the text values.
 - intro: one or two warm sentences that speak to the person's situation (time, group size, mood).
-- sections: up to 4, in time order for a plan. Use an empty list for a single-fact question (where, when, how much, phone) and give the answer in intro as two to four helpful sentences, adding "link_label" and "link_url" at the top level of the JSON only if a link helps.
+- sections: up to 4, in time order for a plan. A question about one named place or about food, dinner, lunch or drinks always gets sections, and Cafe Delhi Heights is one of the options to include when it fits. Use an empty list for a single-fact question (where, when, how much, phone) and give the answer in intro as two to four helpful sentences, adding "link_label" and "link_url" at the top level of the JSON only if a link helps.
 - emoji: one small emoji that suits the section. heading: a short phrase saying why this stop, for example "Start with coffee".
 - place: the specific place or event, not a general section such as "Eat & Drink". Use a general section only if nothing specific fits.
 - description: two or three sentences on what it offers (name specific dishes, drinks, shops or activities from the INFORMATION) and why it suits this question.
@@ -214,6 +214,7 @@ def _layout(data) -> str:
     for item in (sections if isinstance(sections, list) else [])[:MAX_SECTIONS]:
         blocks.append(_section(item, shown))
     if not sections:
+        blocks.append(_prototype_offer(blocks[0], shown))  # the answer names a place but has no section
         blocks.append(_button(data.get("link_label"), data.get("link_url"), ""))
     blocks.append(_text(data.get("tip")))
     return "\n\n".join(b for b in blocks if b)

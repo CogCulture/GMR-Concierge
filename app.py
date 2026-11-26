@@ -599,6 +599,8 @@ st.html(f"""
     align-items: flex-start;
     gap: 10px;
     width: 100%;
+    box-sizing: border-box;
+    padding-right: 30px;
   }}
   .aero-avatar-circle {{
     width: 32px;
@@ -645,6 +647,28 @@ st.html(f"""
   }}
   .aero-asst-bubble p.aero-sec-head strong {{
     font-weight: 700;
+  }}
+  .aero-asst-bubble p.aero-offer {{
+    display: block;
+    margin: 10px 0 6px 0;
+    padding: 10px 14px;
+    border: 1.5px dashed #BA8F47;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #FFF8E8 0%, #FBEFD2 100%);
+  }}
+  .aero-asst-bubble p.aero-offer .aero-offer-tag {{
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #7A5314;
+  }}
+  .aero-asst-bubble p.aero-offer .aero-offer-note {{
+    display: block;
+    margin-top: 3px;
+    font-size: 10.5px;
+    line-height: 1.35;
+    font-style: italic;
+    color: #8C7A5B;
   }}
   .aero-asst-bubble p.aero-sec-btn {{
     margin: 8px 0 4px 0;
@@ -935,6 +959,10 @@ def _format_chat_html(text: str) -> str:
         body = p.replace(chr(10), "<br>")
         if re.fullmatch(r"<strong>[^<]*</strong>", p):
             out.append(f'<p class="aero-sec-head">{body}</p>')
+        elif p.startswith("🏷️ Sample offer"):
+            title, _, note = body.partition("<br>")
+            out.append(f'<p class="aero-offer"><span class="aero-offer-tag">{title}</span>'
+                       f'<span class="aero-offer-note">{note}</span></p>')
         elif re.fullmatch(r"<a [^>]*>[^<]*</a>", p):
             out.append(f'<p class="aero-sec-btn">{body}</p>')
         else:

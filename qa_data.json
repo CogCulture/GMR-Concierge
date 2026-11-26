@@ -1,0 +1,65 @@
+{
+  "bot_config": {
+    "bot_name": "AeroAI Concierge",
+    "subtitle": "Your smart assistant for everything at Aerocity",
+    "welcome_message": "Hello! Welcome to GMR Aerocity. How can I help you today?",
+    "fallback_message": "I'm sorry, I couldn't find an answer to that question. Could you try choosing one of the topics below?",
+    "footer_text": "Powered by AeroAI Concierge"
+  },
+  "categories": [
+    {
+      "name": "Aerocity Concierge",
+      "icon": "🏨",
+      "qa_pairs": [
+        {
+          "title": "Plan your time",
+          "subtitle": "4 hours between meetings",
+          "icon_type": "calendar_clock",
+          "question": "I have 4 hours between meetings. What can I do at Aerocity?"
+        },
+        {
+          "title": "What's happening",
+          "subtitle": "This weekend",
+          "icon_type": "calendar",
+          "question": "Is there anything happening this weekend at Aerocity?"
+        },
+        {
+          "title": "Meetings & MICE",
+          "subtitle": "Conference facilities",
+          "icon_type": "users",
+          "question": "What MICE and conference facilities are available at Aerocity?"
+        },
+        {
+          "title": "Just landed",
+          "subtitle": "A full-day itinerary",
+          "icon_type": "pin",
+          "question": "I just landed in Delhi. Can you plan my full day?"
+        },
+        {
+          "title": "Client coffee",
+          "subtitle": "Beyond a hotel lobby",
+          "icon_type": "coffee",
+          "question": "Where can I take a client for coffee that isn't a hotel lobby?"
+        },
+        {
+          "title": "Drinks & music",
+          "subtitle": "Plans for tonight",
+          "icon_type": "music",
+          "question": "Where can I go for drinks and good music tonight?"
+        },
+        {
+          "title": "100-person event",
+          "subtitle": "Conference venues",
+          "icon_type": "users",
+          "question": "What conference venues are available for a 100-person event?"
+        },
+        {
+          "title": "Upcoming events",
+          "subtitle": "Where to attend them",
+          "icon_type": "ticket",
+          "question": "Where can I attend upcoming events in Aerocity?"
+        }
+      ]
+    }
+  ]
+}

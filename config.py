@@ -49,3 +49,11 @@ PAGE_TITLE = "AeroAI Concierge"
 PAGE_ICON = "💬"
 MAX_CHAT_HISTORY = 50
 TYPING_DELAY = 0.02
+
+# ──────────────────────────────────────────────
+# Prototype offers (demo only)
+# ──────────────────────────────────────────────
+# Place name -> sample offer. The program adds these to answers with a disclaimer; the AI never writes offers.
+PROTOTYPE_OFFERS = {
+    "Cafe Delhi Heights": "20% off",
+}

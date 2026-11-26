@@ -568,7 +568,7 @@ st.html(f"""
 
   /* ── Chat Messages ─────────────────────────── */
   .st-key-chat_stream {{
-    min-height: 250px !important;
+    min-height: 500px !important;
     gap: 12px !important;
     padding-top: 8px !important;
     padding-bottom: 10px !important;

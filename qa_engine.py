@@ -11,7 +11,7 @@ from google import genai
 from google.genai import types
 
 from config import (
-    BASE_DIR, QA_DATA_FILE, HISTORY_LIMIT,
+    BASE_DIR, QA_DATA_FILE, HISTORY_LIMIT, PROTOTYPE_OFFERS,
     OPENAI_API_KEY, OPENAI_MODEL, GEMINI_API_KEY, GEMINI_MODEL,
 )
 
@@ -31,7 +31,7 @@ Planning free time or a day at Aerocity is in scope: suggest only places and eve
 Use the earlier messages to understand follow-up questions such as "where is it?".
 
 FORMAT. Reply with one JSON object only, no other text, exactly in this shape:
-{"intro":"", "sections":[{"emoji":"", "heading":"", "place":"", "description":"", "location":"", "timing":"", "phone":"", "offer":"", "link_label":"", "link_url":""}], "tip":""}
+{"intro":"", "sections":[{"emoji":"", "heading":"", "place":"", "description":"", "location":"", "timing":"", "phone":"", "link_label":"", "link_url":""}], "tip":""}
 The program turns the JSON into the screen, so never put links, "|", bullet points, markdown or emojis inside the text values.
 - intro: one or two warm sentences that speak to the person's situation (time, group size, mood).
 - sections: up to 4, in time order for a plan. Use an empty list for a single-fact question (where, when, how much, phone) and give the answer in intro as two to four helpful sentences, adding "link_label" and "link_url" at the top level of the JSON only if a link helps.
@@ -39,10 +39,9 @@ The program turns the JSON into the screen, so never put links, "|", bullet poin
 - place: the specific place or event, not a general section such as "Eat & Drink". Use a general section only if nothing specific fits.
 - description: two or three sentences on what it offers (name specific dishes, drinks, shops or activities from the INFORMATION) and why it suits this question.
 - location, timing, phone: only facts the INFORMATION gives, otherwise an empty string. For an event put the date and time in timing.
-- offer: only an offer or discount that the INFORMATION states for this place, with any label the INFORMATION gives it (such as "Sample offer"). Otherwise an empty string.
 - link_label is the purpose: "Book a table", "RSVP", "View details" or "Get directions". link_url is the place's own link or the LINK of the website page that mentions it, otherwise an empty string. For "Get directions" leave link_url empty.
 - tip: one closing line with a useful tip or next step.
-Never invent offers, discounts, timings, phone numbers or links.
+Never invent offers, discounts, timings, phone numbers or links, and never write about any offer, discount or deal yourself, even if the INFORMATION mentions one. The program adds the only offer.
 
 Events:
 - Compare each event date with today's date.
@@ -166,7 +165,23 @@ def _button(label, url, place: str) -> str:
     return f"[{label}]({url})"
 
 
-def _section(item) -> str:
+OFFER_NOTE = "For prototype demonstration only. Not a real or valid offer."
+
+
+def _simple(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", name.lower()).strip()
+
+
+def _prototype_offer(place: str, shown: set) -> str:
+    """The sample offer for this place, added by the program once per answer. Empty for any other place."""
+    for name, offer in PROTOTYPE_OFFERS.items():
+        if name not in shown and _simple(name) and _simple(name) in _simple(place):
+            shown.add(name)
+            return f"🏷️ Sample offer: {_text(offer)}\n{OFFER_NOTE}"
+    return ""
+
+
+def _section(item, shown: set) -> str:
     if not isinstance(item, dict):
         return ""
     place = _text(item.get("place"))
@@ -178,11 +193,11 @@ def _section(item) -> str:
     blocks.append(f"**{place}**\n{about}" if about else f"**{place}**")
     facts = [f"{icon} {_text(item.get(key))}" for key, icon in
              (("location", "📍"), ("timing", "🕒"), ("phone", "📞")) if _text(item.get(key))]
-    offer = _text(item.get("offer"))
-    if offer:
-        facts.append(f"🎁 {offer}")
     if facts:
         blocks.append("\n".join(facts))
+    offer = _prototype_offer(place, shown)
+    if offer:
+        blocks.append(offer)
     button = _button(item.get("link_label"), item.get("link_url"), place)
     if button:
         blocks.append(button)
@@ -195,8 +210,9 @@ def _layout(data) -> str:
         return ""
     sections = data.get("sections")
     blocks = [_text(data.get("intro"))]
+    shown = set()  # offers already added, so each shows once per answer
     for item in (sections if isinstance(sections, list) else [])[:MAX_SECTIONS]:
-        blocks.append(_section(item))
+        blocks.append(_section(item, shown))
     if not sections:
         blocks.append(_button(data.get("link_label"), data.get("link_url"), ""))
     blocks.append(_text(data.get("tip")))
